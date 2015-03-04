@@ -17,17 +17,17 @@ class EnigmaEncryptTest < Minitest::Test
     assert "a", encrypt.charmap[0]
   end
 
-  def test_rotate_methods_return_a_fixnum
-    encrypt = Encrypt.new(50403, 303015)
-    assert_equal Fixnum, encrypt.rotate_a.class
+  def test_rotate_methods_return_a_char
+    encrypt = Encrypt.new(50403, [30000, 300, 15])
+    assert_equal String, encrypt.rotate_a("b").class
   end
 
-  def test_rotations_return_correct_number
-    encrypt = Encrypt.new(50403, 303015)
-    assert_equal 59, encrypt.rotate_a
-    assert_equal 6, encrypt.rotate_b
-    assert_equal 42, encrypt.rotate_c
-    assert_equal 8, encrypt.rotate_d
+  def test_rotations_return_correct_char
+    encrypt = Encrypt.new(50403, [30000, 300, 15])
+    assert_equal "u", encrypt.rotate_a("a")
+    assert_equal "g", encrypt.rotate_b("a")
+    assert_equal "d", encrypt.rotate_c("a")
+    assert_equal "i", encrypt.rotate_d("a")
   end
 
   def test_input_parser_exists
@@ -37,8 +37,18 @@ class EnigmaEncryptTest < Minitest::Test
 
   def test_input_parser_can_read_lines
     input = InputParser.new('sample.txt')
-    assert_equal Array, input.lines.class
-    puts input.lines
+    refute_equal nil, input.lines.class
+    assert_equal String, input.lines.class
+  end
+
+  def test_input_parser_can_count_rotations
+    input = InputParser.new('sample.txt')
+    input.rotate
+    assert_equal 1, input.rot_count
+    input.rotate
+    assert_equal 2, input.rot_count
+    2.times{input.rotate}
+    assert_equal 0, input.rot_count
   end
 
 end
