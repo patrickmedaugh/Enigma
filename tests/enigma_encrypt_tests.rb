@@ -18,12 +18,12 @@ class EnigmaEncryptTest < Minitest::Test
   end
 
   def test_rotate_methods_return_a_char
-    encrypt = Encrypt.new(50403, [30000, 300, 15])
+    encrypt = Encrypt.new(50403, 30315)
     assert_equal String, encrypt.rotate_a("b").class
   end
 
   def test_rotations_return_correct_char
-    encrypt = Encrypt.new(50403, [30000, 300, 15])
+    encrypt = Encrypt.new(50403, 30315)
     assert_equal "u", encrypt.rotate_a("a")
     assert_equal "g", encrypt.rotate_b("a")
     assert_equal "d", encrypt.rotate_c("a")
@@ -43,11 +43,11 @@ class EnigmaEncryptTest < Minitest::Test
 
   def test_input_parser_can_count_rotations
     input = InputParser.new('sample.txt')
-    input.rotate
+    input.rotate_counter
     assert_equal 1, input.rot_count
-    input.rotate
+    input.rotate_counter
     assert_equal 2, input.rot_count
-    2.times{input.rotate}
+    2.times{input.rotate_counter}
     assert_equal 0, input.rot_count
   end
 

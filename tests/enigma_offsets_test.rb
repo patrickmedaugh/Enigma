@@ -16,12 +16,12 @@ class EnigmaOffsetsTest < Minitest::Test
   end
 
   def test_it_can_return_the_last_four_of_the_date
-    offset = Offset.new([30000, 300, 15])
+    offset = Offset.new(30315)
     assert_equal "9225", offset.num
   end
 
   def test_each_offset_has_an_integer
-    off = Offset.new([30000, 300, 15])
+    off = Offset.new(30315)
     assert_equal 9, off.a
     assert_equal 2, off.b
     assert_equal 2, off.c

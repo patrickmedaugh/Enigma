@@ -12,10 +12,10 @@ class EnigmaKeyTest < Minitest::Test
 
   def test_it_has_rotations
     key = Key.new(41521)
-    assert_equal 41, key.a_rotation
-    assert_equal 15, key.b_rotation
-    assert_equal 52, key.c_rotation
-    assert_equal 21, key.d_rotation
+    assert_equal 41, key.a
+    assert_equal 15, key.b
+    assert_equal 52, key.c
+    assert_equal 21, key.d
   end
 
 end
