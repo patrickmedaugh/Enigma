@@ -45,7 +45,7 @@ class InputParser
 
   def initialize(file)
     handle = File.open(file)
-    @lines = handle.readlines(file).join
+    @lines = handle.readlines(file).join.strip
     @rot_count = 0
     @new_lines = []
   end
@@ -63,6 +63,16 @@ class InputParser
       end
   end
 
+  def translate
+    encrypt = Encrypt.new(50403, 30315)
+    @lines.chars do |char|
+      @new_lines << encrypt.rotate_a(char) if @rot_count == 0
+      @new_lines << encrypt.rotate_b(char) if @rot_count == 1
+      @new_lines << encrypt.rotate_c(char) if @rot_count == 2
+      @new_lines << encrypt.rotate_d(char) if @rot_count == 3
+      self.rotate_counter
+    end
+  end
 
   # e = Encrypt.new(50403, 30315)
   # @lines.chars do |char|
@@ -71,5 +81,6 @@ class InputParser
 end
 
 input = InputParser.new('sample.txt')
-input.rotate_counter
+input.translate
 puts input.new_lines
+puts input.new_lines.class
