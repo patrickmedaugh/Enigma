@@ -2,8 +2,12 @@ class Key
 
   attr_reader :keynum
 
-  def initialize(key)
-    @keynum = key
+  def initialize(key = Keygen.new)
+    if key.respond_to?(:randkey)
+      @keynum = key.randkey
+    else
+      @keynum = key
+    end
   end
 
   def a
@@ -30,5 +34,10 @@ end
 
 class Keygen
 
+  attr_reader :randkey
+
+  def initialize
+    @randkey = [*("0".."9")].sample(5).reduce{|sum, x| sum + x }.to_i
+  end
 
 end

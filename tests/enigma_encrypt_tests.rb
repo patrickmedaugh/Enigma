@@ -31,24 +31,24 @@ class EnigmaEncryptTest < Minitest::Test
   end
 
   def test_input_parser_exists
-    input = InputParser.new('sample.txt')
-    assert input
+    ep = EncryptParser.new('sample.txt')
+    assert ep
   end
 
   def test_input_parser_can_read_lines
-    input = InputParser.new('sample.txt')
-    refute_equal nil, input.lines.class
-    assert_equal String, input.lines.class
+    ep = EncryptParser.new('sample.txt')
+    refute_equal nil, ep.lines.class
+    assert_equal String, ep.lines.class
   end
 
   def test_input_parser_can_count_rotations
-    input = InputParser.new('sample.txt')
-    input.rotate_counter
-    assert_equal 1, input.rot_count
-    input.rotate_counter
-    assert_equal 2, input.rot_count
-    2.times{input.rotate_counter}
-    assert_equal 0, input.rot_count
+    ep = EncryptParser.new('sample.txt')
+    ep.rotate_counter
+    assert_equal 1, ep.rot_count
+    ep.rotate_counter
+    assert_equal 2, ep.rot_count
+    2.times{ep.rotate_counter}
+    assert_equal 0, ep.rot_count
   end
 
 end
