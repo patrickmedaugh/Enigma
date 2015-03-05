@@ -8,20 +8,24 @@ require_relative '../lib/enigma_encrypt'
 class EnigmaEncryptTest < Minitest::Test
 
   def test_it_exists
-    encrypt = Encrypt.new(nil)
-    assert encrypt
+    ep = EncryptParser.new('sample.txt')
+    ep.translate
+    assert ep.encrypt
   end
 
   def test_it_has_a_char_map
-    encrypt = Encrypt.new(nil)
+    ep = EncryptParser.new('sample.txt', 41295, 30315)
+    ep.translate
+    encrypt = ep.encrypt
     assert_equal Array, encrypt.charmap.class
     assert " ", encrypt.charmap[-1]
     assert "a", encrypt.charmap[0]
   end
 
   def test_rotate_methods_return_a_char
-    encrypt = Encrypt.new(50403, 30315)
-    assert_equal String, encrypt.rotate_a("b").class
+    ep = EncryptParser.new('sample.txt')
+    ep.translate
+    assert_equal String, ep.encrypt.rotate_a("b").class
   end
 
   def test_rotations_return_correct_char
@@ -54,12 +58,12 @@ class EnigmaEncryptTest < Minitest::Test
   end
 
   def test_encrypt_parser_can_translate_letters
-    #IDONTKNOWHOWTOWRITETHISTEST
-    skip
     ep = EncryptParser.new('sample.txt')
     ep.translate
-    refute_equal lines[0], ep.new_lines[0]
-    assert_equal String, ep.new_lines[0]
+    refute_equal ep.lines[0], ep.new_lines[0]
+    assert_equal String, ep.new_lines[0].class
+    assert ep.key
+    assert ep.offset
   end
 
 

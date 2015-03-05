@@ -7,20 +7,9 @@ class Encrypt
   attr_reader :charmap, :rot1, :rot2
   #ASK SOMEONE SMART ABOUT TOP LEVEL VALIDATION!!!!!!!!!!!!!!!!!!!!!!!
   #ASK THEM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (EncryptParser)
-  #key will be Key object or Fixnum. offset will be Offset object or Fixnum
-  #if key is a key object need to extract the fixnum "keynum"
-  #if offset is an offset object, need to extract the fixnum "num"
-  def initialize(key = Key.new, offset = CurrentDate.new)
-    if key.is_a?(Key)
-      @rot1 = Key.new(key.keynum)
-    else
-      @rot1 = Key.new(key)
-    end
-    if offset.is_a?(Offset)
-      @rot2 = Offset.new(offset.num)
-    else
-      @rot2 = Offset.new(offset)
-    end
+  def initialize(key, offset)
+    @rot1 = Key.new(key)
+    @rot2 = Offset.new(offset)
     @charmap = [*("a".."z"), *("0".."9"), " ", ".", "," ]
   end
 
@@ -52,10 +41,13 @@ end
 
 class EncryptParser
 
-  attr_reader :lines, :key, :offset
-  attr_accessor :new_lines, :rot_count
+  attr_reader :lines, :encrypt
+  attr_accessor :new_lines, :rot_count, :key, :offset
 
-  def initialize(file, key = Key.new, offset = Offset.new)
+  def initialize(file, first = Key.new.keynum, second = Offset.new.num)
+      @key = first
+      @offset = second
+    # require'pry';binding.pry
     handle = File.open(file)
     @lines = handle.readlines(file).join.strip
     @rot_count = 0
@@ -63,7 +55,6 @@ class EncryptParser
     @key = key
     @offset = offset
   end
-
   def rotate_counter
     case @rot_count
       when 0
@@ -78,7 +69,7 @@ class EncryptParser
   end
 
   def translate
-    encrypt = Encrypt.new(@key, @offset)
+    @encrypt = Encrypt.new(@key, @offset)
     @lines.chars do |char|
       @new_lines << encrypt.rotate_a(char) if @rot_count == 0
       @new_lines << encrypt.rotate_b(char) if @rot_count == 1

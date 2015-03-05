@@ -8,7 +8,7 @@ class Offset
     else
       @num = date
     end
-    @num = @num ** 2
+    @num = @num.to_i ** 2
     @num = @num.to_s.reverse[0..3].reverse
   end
 

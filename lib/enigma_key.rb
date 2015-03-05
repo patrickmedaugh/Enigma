@@ -1,6 +1,6 @@
 class Key
 
-  attr_reader :keynum
+  attr_accessor :keynum
 
   def initialize(key = Keygen.new)
     if key.is_a?(Keygen)
