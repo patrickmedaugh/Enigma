@@ -79,6 +79,6 @@ class DecryptParser
 end
 
 
-# dp = DecryptParser.new('decrypt_sample.txt')
-# dp.translate
-# puts dp.new_lines
+ dp = DecryptParser.new('decrypt_sample.txt')
+ dp.translate
+ puts dp.new_lines

@@ -30,18 +30,18 @@ class EnigmaEncryptTest < Minitest::Test
     assert_equal "i", encrypt.rotate_d("a")
   end
 
-  def test_input_parser_exists
+  def test_encrypt_parser_exists
     ep = EncryptParser.new('sample.txt')
     assert ep
   end
 
-  def test_input_parser_can_read_lines
+  def test_encrypt_parser_can_read_lines
     ep = EncryptParser.new('sample.txt')
     refute_equal nil, ep.lines.class
     assert_equal String, ep.lines.class
   end
 
-  def test_input_parser_can_count_rotations
+  def test_encrypt_parser_can_count_rotations
     ep = EncryptParser.new('sample.txt')
     ep.rotate_counter
     assert_equal 1, ep.rot_count
