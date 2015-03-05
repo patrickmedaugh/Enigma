@@ -14,6 +14,7 @@ class Decrypt
   end
 
   def rotate_a(char)
+    #take absolute value then subtract the modulo 39 of result
     position = @charmap.find_index(char)
     rotate = position - @rot1.a - @rot2.a
     char = @charmap[rotate % 39]
@@ -79,6 +80,6 @@ class DecryptParser
 end
 
 
- dp = DecryptParser.new('decrypt_sample.txt')
- dp.translate
- puts dp.new_lines
+ # dp = DecryptParser.new('decrypt_sample.txt')
+ # dp.translate
+ # puts dp.new_lines

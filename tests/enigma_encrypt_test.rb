@@ -1,3 +1,5 @@
+require 'simplecov'
+SimpleCov.start
 require 'minitest'
 require 'minitest/autorun'
 require 'minitest/pride'
@@ -50,5 +52,15 @@ class EnigmaEncryptTest < Minitest::Test
     2.times{ep.rotate_counter}
     assert_equal 0, ep.rot_count
   end
+
+  def test_encrypt_parser_can_translate_letters
+    #IDONTKNOWHOWTOWRITETHISTEST
+    skip
+    ep = EncryptParser.new('sample.txt')
+    ep.translate
+    refute_equal lines[0], ep.new_lines[0]
+    assert_equal String, ep.new_lines[0]
+  end
+
 
 end

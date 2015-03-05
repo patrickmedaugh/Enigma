@@ -5,10 +5,22 @@ require_relative 'enigma_offsets'
 class Encrypt
 
   attr_reader :charmap, :rot1, :rot2
-
-  def initialize(key, offset = CurrentDate.new)
-    @rot1 = Key.new(key)
-    @rot2 = Offset.new(offset)
+  #ASK SOMEONE SMART ABOUT TOP LEVEL VALIDATION!!!!!!!!!!!!!!!!!!!!!!!
+  #ASK THEM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (EncryptParser)
+  #key will be Key object or Fixnum. offset will be Offset object or Fixnum
+  #if key is a key object need to extract the fixnum "keynum"
+  #if offset is an offset object, need to extract the fixnum "num"
+  def initialize(key = Key.new, offset = CurrentDate.new)
+    if key.is_a?(Key)
+      @rot1 = Key.new(key.keynum)
+    else
+      @rot1 = Key.new(key)
+    end
+    if offset.is_a?(Offset)
+      @rot2 = Offset.new(offset.num)
+    else
+      @rot2 = Offset.new(offset)
+    end
     @charmap = [*("a".."z"), *("0".."9"), " ", ".", "," ]
   end
 
@@ -40,14 +52,16 @@ end
 
 class EncryptParser
 
-  attr_reader :lines
+  attr_reader :lines, :key, :offset
   attr_accessor :new_lines, :rot_count
 
-  def initialize(file)
+  def initialize(file, key = Key.new, offset = Offset.new)
     handle = File.open(file)
     @lines = handle.readlines(file).join.strip
     @rot_count = 0
     @new_lines = []
+    @key = key
+    @offset = offset
   end
 
   def rotate_counter
@@ -64,7 +78,7 @@ class EncryptParser
   end
 
   def translate
-    encrypt = Encrypt.new(50403, 30315)
+    encrypt = Encrypt.new(@key, @offset)
     @lines.chars do |char|
       @new_lines << encrypt.rotate_a(char) if @rot_count == 0
       @new_lines << encrypt.rotate_b(char) if @rot_count == 1
@@ -73,10 +87,10 @@ class EncryptParser
       self.rotate_counter
     end
   end
-
 end
 
-input = EncryptParser.new('sample.txt')
-input.translate
-puts input.new_lines
-puts input.new_lines.class
+
+# input = EncryptParser.new('sample.txt', 41521, 020315)
+# input.translate
+# puts input.new_lines
+# puts input.new_lines.class

@@ -3,7 +3,7 @@ class Offset
   attr_reader :num
 
   def initialize(date = CurrentDate.new)
-    if date.respond_to?(:data)
+    if date.is_a?(CurrentDate)
       @num = date.data
     else
       @num = date

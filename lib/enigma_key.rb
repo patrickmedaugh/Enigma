@@ -3,7 +3,7 @@ class Key
   attr_reader :keynum
 
   def initialize(key = Keygen.new)
-    if key.respond_to?(:randkey)
+    if key.is_a?(Keygen)
       @keynum = key.randkey
     else
       @keynum = key
