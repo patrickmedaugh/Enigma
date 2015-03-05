@@ -41,6 +41,12 @@ class EnigmaEncryptTest < Minitest::Test
     assert ep
   end
 
+  def test_encrypt_parser_has_key_and_offset_params
+    ep = EncryptParser.new('sample.txt')
+    assert ep.key
+    assert ep.offset
+  end
+
   def test_encrypt_parser_can_read_lines
     ep = EncryptParser.new('sample.txt')
     refute_equal nil, ep.lines.class
@@ -62,9 +68,15 @@ class EnigmaEncryptTest < Minitest::Test
     ep.translate
     refute_equal ep.lines[0], ep.new_lines[0]
     assert_equal String, ep.new_lines[0].class
-    assert ep.key
-    assert ep.offset
+    assert_equal String, ep.lines[0].class
   end
 
-
+  def test_encrypt_parser_translates_to_correct_letter
+    ep = EncryptParser.new('sample.txt', 41521, 30315)
+    ep.translate
+    assert_equal ep.new_lines[0], "l"
+    assert_equal ep.new_lines[1], "s"
+    assert_equal ep.new_lines[2], "r"
+    assert_equal ep.new_lines[3], "3"
+  end
 end

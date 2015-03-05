@@ -9,23 +9,23 @@ class Offset
       @num = date
     end
     @num = @num.to_i ** 2
-    @num = @num.to_s.reverse[0..3].reverse
+    @num = @num.to_s.reverse[0..3].reverse.to_i
   end
 
   def a
-    @num[0].to_i
+    @num.to_s[0].to_i
   end
 
   def b
-    @num[1].to_i
+    @num.to_s[1].to_i
   end
 
   def c
-    @num[2].to_i
+    @num.to_s[2].to_i
   end
 
   def d
-    @num[3].to_i
+    @num.to_s[3].to_i
   end
 
 end

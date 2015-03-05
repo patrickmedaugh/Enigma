@@ -5,8 +5,7 @@ require_relative 'enigma_offsets'
 class Encrypt
 
   attr_reader :charmap, :rot1, :rot2
-  #ASK SOMEONE SMART ABOUT TOP LEVEL VALIDATION!!!!!!!!!!!!!!!!!!!!!!!
-  #ASK THEM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! (EncryptParser)
+
   def initialize(key, offset)
     @rot1 = Key.new(key)
     @rot2 = Offset.new(offset)
@@ -45,16 +44,15 @@ class EncryptParser
   attr_accessor :new_lines, :rot_count, :key, :offset
 
   def initialize(file, first = Key.new.keynum, second = Offset.new.num)
-      @key = first
-      @offset = second
+    @key = first
+    @offset = second
     # require'pry';binding.pry
     handle = File.open(file)
     @lines = handle.readlines(file).join.strip
     @rot_count = 0
     @new_lines = []
-    @key = key
-    @offset = offset
   end
+  
   def rotate_counter
     case @rot_count
       when 0
@@ -79,9 +77,3 @@ class EncryptParser
     end
   end
 end
-
-
-# input = EncryptParser.new('sample.txt', 41521, 020315)
-# input.translate
-# puts input.new_lines
-# puts input.new_lines.class
