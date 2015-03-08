@@ -79,4 +79,5 @@ class EnigmaEncryptTest < Minitest::Test
     assert_equal ep.new_lines[2], "r"
     assert_equal ep.new_lines[3], "3"
   end
+
 end

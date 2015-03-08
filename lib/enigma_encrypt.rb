@@ -40,19 +40,21 @@ end
 
 class EncryptParser
 
-  attr_reader :lines, :encrypt
+  attr_reader :lines
   attr_accessor :new_lines, :rot_count, :key, :offset
 
   def initialize(file, first = Key.new.keynum, second = Offset.new.num)
+    first ||= ARGV[1]
+    second ||= ARGV[2]
     @key = first
     @offset = second
-    # require'pry';binding.pry
+    file = ARGV[0]
     handle = File.open(file)
     @lines = handle.readlines(file).join.strip
     @rot_count = 0
     @new_lines = []
   end
-  
+
   def rotate_counter
     case @rot_count
       when 0
@@ -67,7 +69,7 @@ class EncryptParser
   end
 
   def translate
-    @encrypt = Encrypt.new(@key, @offset)
+    encrypt = Encrypt.new(@key, @offset)
     @lines.chars do |char|
       @new_lines << encrypt.rotate_a(char) if @rot_count == 0
       @new_lines << encrypt.rotate_b(char) if @rot_count == 1
@@ -76,4 +78,15 @@ class EncryptParser
       self.rotate_counter
     end
   end
+
+  def writer
+    output = File.open("Encrypted.txt", "w")
+    output.write(@new_lines.join)
+    output.close
+  end
+
 end
+
+ep = EncryptParser.new(ARGV[0], ARGV[1], ARGV[2])
+ep.translate
+ep.writer
