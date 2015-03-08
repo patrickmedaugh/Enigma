@@ -7,8 +7,8 @@ class Encrypt
   attr_reader :charmap, :rot1, :rot2
 
   def initialize(key, offset)
-    @rot1 = Key.new(key)
-    @rot2 = Offset.new(offset)
+    @rot1    = Key.new(key)
+    @rot2    = Offset.new(offset)
     @charmap = [*("a".."z"), *("0".."9"), " ", ".", "," ]
   end
 
@@ -44,15 +44,22 @@ class EncryptParser
   attr_accessor :new_lines, :rot_count, :key, :offset
 
   def initialize(file, first = Key.new.keynum, second = Offset.new.num)
-    first ||= ARGV[1]
+    first  ||= ARGV[1]
     second ||= ARGV[2]
-    @key = first
+    @key    = first
     @offset = second
-    file = ARGV[0]
-    handle = File.open(file)
-    @lines = handle.readlines(file).join.strip
-    @rot_count = 0
-    @new_lines = []
+    file    = ARGV[0]
+    handle  = File.open(file)
+    @lines  = handle.readlines(file).join.strip
+  end
+
+  def validate
+    en = Encrypt.new(nil,nil)
+    @lines = @lines.split("")
+    @lines = @lines.reject do |char|
+      en.charmap.include?(char) == false
+    end
+    @lines = @lines.join
   end
 
   def rotate_counter
@@ -69,13 +76,15 @@ class EncryptParser
   end
 
   def translate
+    @rot_count = 0
+    @new_lines = []
     encrypt = Encrypt.new(@key, @offset)
     @lines.chars do |char|
       @new_lines << encrypt.rotate_a(char) if @rot_count == 0
       @new_lines << encrypt.rotate_b(char) if @rot_count == 1
       @new_lines << encrypt.rotate_c(char) if @rot_count == 2
       @new_lines << encrypt.rotate_d(char) if @rot_count == 3
-      self.rotate_counter
+      rotate_counter
     end
   end
 
@@ -87,6 +96,9 @@ class EncryptParser
 
 end
 
-ep = EncryptParser.new(ARGV[0], ARGV[1], ARGV[2])
-ep.translate
-ep.writer
+if __FILE__ ==$0
+  ep = EncryptParser.new(ARGV[0], ARGV[1], ARGV[2])
+  ep.validate
+  ep.translate
+  ep.writer
+end
