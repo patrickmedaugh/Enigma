@@ -8,24 +8,19 @@ require_relative '../lib/enigma_encrypt'
 class EnigmaEncryptTest < Minitest::Test
 
   def test_it_exists
-    ep = EncryptParser.new('sample.txt')
-    ep.translate
-    assert ep.encrypt
+    assert Encrypt
   end
 
   def test_it_has_a_char_map
-    ep = EncryptParser.new('sample.txt', 41295, 30315)
-    ep.translate
-    encrypt = ep.encrypt
+    encrypt = Encrypt.new(nil,nil)
     assert_equal Array, encrypt.charmap.class
     assert " ", encrypt.charmap[-1]
     assert "a", encrypt.charmap[0]
   end
 
   def test_rotate_methods_return_a_char
-    ep = EncryptParser.new('sample.txt')
-    ep.translate
-    assert_equal String, ep.encrypt.rotate_a("b").class
+    ep = Encrypt.new(nil,nil)
+    assert_equal String, ep.rotate_a("b").class
   end
 
   def test_rotations_return_correct_char
@@ -54,13 +49,13 @@ class EnigmaEncryptTest < Minitest::Test
   end
 
   def test_encrypt_parser_can_count_rotations
-    ep = EncryptParser.new('sample.txt')
-    ep.rotate_counter
-    assert_equal 1, ep.rot_count
-    ep.rotate_counter
-    assert_equal 2, ep.rot_count
-    2.times{ep.rotate_counter}
-    assert_equal 0, ep.rot_count
+    en = Encrypt.new(nil,nil)
+    en.rotate_counter
+    assert_equal 1, en.rot_count
+    en.rotate_counter
+    assert_equal 2, en.rot_count
+    2.times{en.rotate_counter}
+    assert_equal 0, en.rot_count
   end
 
   def test_encrypt_parser_can_translate_letters

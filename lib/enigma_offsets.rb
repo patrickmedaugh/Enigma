@@ -39,7 +39,7 @@ class CurrentDate
     @data[0] = @data[0].to_i * 10000
     @data[1] = @data[1].to_i * 100
     @data[2] = @data[2].to_i
-    @data = @data[0] + @data[1] + @data[2]
+    @data    = @data[0] + @data[1] + @data[2]
   end
 
 end
