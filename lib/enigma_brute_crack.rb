@@ -5,14 +5,13 @@ require'pry'
 
 class Brutecrack
 
-  attr_reader :last7, :position, :tot_chars, :lines
+  attr_reader   :lines
   attr_accessor :key_s, :rot_count
 
   def initialize(file, offset = Offset.new)
     handle     = File.open(file)
     @lines     = handle.readlines(file).join.strip
     @key_s     = '00001'
-    @rot_count = 0
     @offset    = offset
     @new_lines = []
   end
@@ -30,7 +29,7 @@ class Brutecrack
       end
       @key_s = @key_s.succ
     end
-    @key_s.to_i - 1
+    (@key_s.to_i - 1).to_s.rjust(5, "0")
   end
 
 end

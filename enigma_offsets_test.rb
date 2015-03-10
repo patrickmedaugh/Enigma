@@ -13,6 +13,11 @@ class EnigmaOffsetsTest < Minitest::Test
     assert Integer, current.class
   end
 
+  def test_it_can_return_the_last_four_of_the_date
+    offset = Offset.new(30315)
+    assert_equal 9225, offset.num
+  end
+
   def test_each_offset_has_an_integer
     off = Offset.new(30315)
     assert_equal 9, off.a
@@ -21,9 +26,4 @@ class EnigmaOffsetsTest < Minitest::Test
     assert_equal 5, off.d
   end
 
-  def test_offset_can_generate_based_on_date
-    off = Offset.new
-    assert_equal Fixnum, off.date.class
-    assert_equal String, off.num.class
-  end
 end

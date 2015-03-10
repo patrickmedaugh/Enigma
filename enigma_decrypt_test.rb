@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relatie 'test_helper'
 require_relative '../lib/enigma_decrypt'
 
 class EnigmaDecryptTest < Minitest::Test
@@ -39,7 +39,7 @@ class EnigmaDecryptTest < Minitest::Test
   end
 
   def test_decrypt_parser_has_key_and_offset_params
-    de = DecryptParser.new('sample.txt', 41251, 30315)
+    de = DecryptParser.new('sample.txt')
     assert de.key
     assert de.offset
   end
@@ -50,12 +50,12 @@ class EnigmaDecryptTest < Minitest::Test
   end
 
   def test_decrypt_parser_can_translate
-    de = DecryptParser.new('sample.txt', 41251, 30315)
+    de = DecryptParser.new('sample.txt')
     de.validate_text
     de.translate
-    refute_equal de.lines[3], de.new_lines[3]
-    assert_equal String, de.new_lines[3].class
-    assert_equal String, de.lines[3].class
+    refute_equal de.lines[0], de.new_lines[0]
+    assert_equal String, de.new_lines[0].class
+    assert_equal String, de.lines[0].class
   end
 
   def test_decrypt_parser_can_reject_invalid_chars

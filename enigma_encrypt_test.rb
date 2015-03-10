@@ -20,11 +20,11 @@ class EnigmaEncryptTest < Minitest::Test
   end
 
   def test_rotations_return_correct_char
-    encrypt = Encrypt.new(41521, 20315)
-    assert_equal "l", encrypt.rotate_a("a")
-    assert_equal "r", encrypt.rotate_b("a")
-    assert_equal "p", encrypt.rotate_c("a")
-    assert_equal "0", encrypt.rotate_d("a")
+    encrypt = Encrypt.new(50403, 30315)
+    assert_equal "u", encrypt.rotate_a("a")
+    assert_equal "g", encrypt.rotate_b("a")
+    assert_equal "d", encrypt.rotate_c("a")
+    assert_equal "i", encrypt.rotate_d("a")
   end
 
   def test_encrypt_parser_exists
@@ -63,6 +63,13 @@ class EnigmaEncryptTest < Minitest::Test
   end
 
   def test_encrypt_parser_translates_to_correct_letter
+    ep = EncryptParser.new('sample.txt', 41521, 30315)
+    ep.validate_text
+    ep.translate
+    assert_equal ep.new_lines[0], "l"
+    assert_equal ep.new_lines[1], "s"
+    assert_equal ep.new_lines[2], "r"
+    assert_equal ep.new_lines[3], "3"
   end
 
   def test_encrypt_parser_can_reject_invalid_characters

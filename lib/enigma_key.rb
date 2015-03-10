@@ -6,7 +6,7 @@ class Key
     if key.is_a?(Keygen)
       @keynum = key.randkey
     else
-      @keynum = key
+      @keynum = key.to_s
     end
   end
 
@@ -37,7 +37,7 @@ class Keygen
   attr_reader :randkey
 
   def initialize
-    @randkey = [*("0".."9")].sample(5).reduce{|sum, x| sum + x }.to_i
+    @randkey = [*("0".."9")].sample(5).reduce{|sum, x| sum + x }
   end
 
 end

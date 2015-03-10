@@ -17,6 +17,7 @@ class Encrypt
   def rotate_a(char)
     position = @charmap.find_index(char)
     rotate   = position + @rot1.a + @rot2.a
+
     char     = @charmap[rotate % 39]
   end
 
@@ -55,24 +56,26 @@ end
 
 class EncryptParser
 
-  attr_reader :lines
-  attr_accessor :new_lines, :rot_count, :key, :offset
+  attr_reader :lines, :offset
+  attr_accessor :new_lines, :rot_count, :key
 
-  def initialize(file, first = Key.new.keynum, second = Offset.new.num)
+  def initialize(file, first=nil, second=nil)
     @key    = first
     @offset = second
+    @key   ||= Keygen.new.randkey
+    @offset||= Offset.new.date
     file    = file
     handle  = File.open(file)
     @lines  = handle.readlines(file).join.strip
   end
 
-  def validate
+  def validate_text
     en = Encrypt.new(nil,nil)
     @lines = @lines.split("")
     @lines = @lines.reject do |char|
       en.charmap.include?(char) == false
     end
-    @lines = @lines.join
+    @lines = @lines.join.strip
   end
 
   def translate
@@ -97,7 +100,8 @@ end
 
 if __FILE__ ==$0
   ep = EncryptParser.new(ARGV[0], ARGV[1], ARGV[2])
-  ep.validate
+  ep.validate_text
   ep.translate
   ep.writer
+  puts "Created an Encrypted.txt file with Key: #{ep.key} and Offset: #{ep.offset}"
 end

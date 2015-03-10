@@ -67,17 +67,17 @@ end
 
 class DecryptParser
 
-  attr_reader :lines
+  attr_reader :lines, :offs
   attr_accessor :new_lines, :rot_count, :key, :offset
 
-  def initialize(file, first = Key.new.keynum, second = Offset.new.num)
+  def initialize(file, first=nil, second=nil)
     @key    = first
     @offset = second
     handle  = File.open(file)
     @lines  = handle.readlines(file).join.strip
   end
 
-  def validate
+  def validate_text
     de     = Decrypt.new(nil,nil)
     @lines = @lines.split("")
     @lines = @lines.reject do |char|
@@ -108,7 +108,8 @@ end
 
 if __FILE__ == $0
   dp = DecryptParser.new(ARGV[0], ARGV[1], ARGV[2])
-  dp.validate
+  dp.validate_text
   dp.translate
   dp.writer
+  puts "Created a Decrypted.txt file with Key: #{dp.key} and Offset: #{dp.offset}"
 end
