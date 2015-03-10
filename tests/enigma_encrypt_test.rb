@@ -62,9 +62,6 @@ class EnigmaEncryptTest < Minitest::Test
     assert_equal String, ep.lines[0].class
   end
 
-  def test_encrypt_parser_translates_to_correct_letter
-  end
-
   def test_encrypt_parser_can_reject_invalid_characters
     ep = EncryptParser.new('sample.txt', 41521, 30315)
     assert_equal 'abcde', ep.validate_text
