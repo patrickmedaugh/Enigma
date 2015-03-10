@@ -17,7 +17,6 @@ class Encrypt
   def rotate_a(char)
     position = @charmap.find_index(char)
     rotate   = position + @rot1.a + @rot2.a
-
     char     = @charmap[rotate % 39]
   end
 

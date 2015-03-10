@@ -29,7 +29,6 @@ class Brutecrack
       end
       @key_s = @key_s.succ
     end
-    @new_lines = new_lines
     @key_s = (@key_s.to_i - 1).to_s.rjust(5, "0")
   end
 
@@ -43,7 +42,7 @@ end
 
 if __FILE__ == $0
    brute = Brutecrack.new(ARGV[0], ARGV[1])
-   brute.key_iterator  
+   brute.key_iterator
    brute.writer
    puts "Created a Cracked.txt file with a key of: #{brute.key_s}."
 end
