@@ -22,18 +22,18 @@ class EnigmaDecryptTest < Minitest::Test
   end
 
   def test_decrypt_parser_can_generate_key_and_offset_params_when_not_given
-    de = DecryptParser.new('../examples/sample.txt')
+    de = DecryptParser.new('../examples/sample.txt', 'Decrypted.txt')
     assert de.key
     assert de.offset
   end
 
   def test_decrypt_parser_can_read_lines
-    de = DecryptParser.new('../examples/sample.txt')
+    de = DecryptParser.new('../examples/sample.txt', 'Decrypted.txt')
     assert_equal String, de.text.class
   end
 
   def test_decrypt_parser_can_translate
-    de = DecryptParser.new('../examples/sample.txt', 41251, 30315)
+    de = DecryptParser.new('../examples/sample.txt', 'Decrypted.txt', 41251, 30315)
     de.normalize_text
     de.decrypt.translate(de.text)
     refute_equal de.text[3], de.decrypt.decrypted_chars[3]
@@ -43,7 +43,7 @@ class EnigmaDecryptTest < Minitest::Test
 
   def test_decrypt_parser_can_reject_invalid_chars
     text = "nazi stuff woooooooo ...end.."
-    de = DecryptParser.new('../examples/sample.txt')
+    de = DecryptParser.new('../examples/sample.txt', 'Decrypted.txt')
     assert_equal text, de.normalize_text
   end
 
