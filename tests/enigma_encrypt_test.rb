@@ -28,43 +28,46 @@ class EnigmaEncryptTest < Minitest::Test
   end
 
   def test_encrypt_parser_exists
-    ep = EncryptParser.new('sample.txt')
+    ep = EncryptParser.new('../examples/crack_sample.txt')
     assert ep
   end
 
   def test_encrypt_parser_has_key_and_offset_params
-    ep = EncryptParser.new('sample.txt')
+    ep = EncryptParser.new('../examples/crack_sample.txt')
     assert ep.key
     assert ep.offset
   end
 
   def test_encrypt_parser_can_read_lines
-    ep = EncryptParser.new('sample.txt')
-    assert_equal String, ep.lines.class
+    ep = EncryptParser.new('../examples/crack_sample.txt')
+    assert_equal String, ep.text.class
   end
 
   def test_encrypt_parser_can_count_rotations
     en = Encrypt.new(nil,nil)
     en.rotate_counter
-    assert_equal 1, en.rot_count
+    assert_equal 1, en.rotate_count
     en.rotate_counter
-    assert_equal 2, en.rot_count
+    assert_equal 2, en.rotate_count
     2.times{en.rotate_counter}
-    assert_equal 0, en.rot_count
+    assert_equal 0, en.rotate_count
   end
 
   def test_encrypt_parser_can_translate_letters
-    ep = EncryptParser.new('sample.txt')
-    ep.validate_text
-    ep.translate
-    refute_equal ep.lines[0], ep.new_lines[0]
-    assert_equal String, ep.new_lines[0].class
-    assert_equal String, ep.lines[0].class
+    ep = EncryptParser.new('../examples/crack_sample.txt')
+    ep.normalize_text
+    ep.encrypt.translate(ep.text)
+    refute_equal ep.text[0], ep.encrypt.encrypted_chars[0]
+    assert_equal String, ep.encrypt.encrypted_chars[0].class
+    assert_equal String, ep.encrypt.encrypted_chars[0].class
   end
 
   def test_encrypt_parser_can_reject_invalid_characters
-    ep = EncryptParser.new('sample.txt', 41521, 30315)
-    assert_equal 'abcde', ep.validate_text
+    ep = EncryptParser.new('../examples/crack_sample.txt', 41521, 30315)
+    chars_before = ep.text.length
+    ep.normalize_text
+    chars_after = ep.text.length
+    assert chars_before > chars_after
   end
 
 end

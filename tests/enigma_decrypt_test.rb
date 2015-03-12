@@ -3,18 +3,6 @@ require_relative '../lib/enigma_decrypt'
 
 class EnigmaDecryptTest < Minitest::Test
 
-  def test_it_exists
-    decrypt = Decrypt.new(50403, 30315)
-    assert decrypt
-  end
-
-  def test_it_has_a_char_map
-    decrypt = Decrypt.new(50403, 30315)
-    assert_equal Array, decrypt.charmap.class
-    assert " ", decrypt.charmap[-1]
-    assert "a", decrypt.charmap[0]
-  end
-
   def test_rotate_methods_return_a_char
     decrypt = Decrypt.new(50403, 30315)
     assert_equal String, decrypt.rotate_a("b").class
@@ -33,34 +21,30 @@ class EnigmaDecryptTest < Minitest::Test
     assert_equal decrypt.charmap[-11], decrypt.rotate_a("a")
   end
 
-  def test_decrypt_parser_exists
-    de = DecryptParser.new('sample.txt')
-    assert de
-  end
-
-  def test_decrypt_parser_has_key_and_offset_params
-    de = DecryptParser.new('sample.txt', 41251, 30315)
+  def test_decrypt_parser_can_generate_key_and_offset_params_when_not_given
+    de = DecryptParser.new('../examples/sample.txt')
     assert de.key
     assert de.offset
   end
 
   def test_decrypt_parser_can_read_lines
-    de = DecryptParser.new('sample.txt')
-    assert_equal String, de.lines.class
+    de = DecryptParser.new('../examples/sample.txt')
+    assert_equal String, de.text.class
   end
 
   def test_decrypt_parser_can_translate
-    de = DecryptParser.new('sample.txt', 41251, 30315)
-    de.validate_text
-    de.translate
-    refute_equal de.lines[3], de.new_lines[3]
-    assert_equal String, de.new_lines[3].class
-    assert_equal String, de.lines[3].class
+    de = DecryptParser.new('../examples/sample.txt', 41251, 30315)
+    de.normalize_text
+    de.decrypt.translate(de.text)
+    refute_equal de.text[3], de.decrypt.decrypted_chars[3]
+    assert_equal String, de.decrypt.decrypted_chars[3].class
+    assert_equal String, de.text[3].class
   end
 
   def test_decrypt_parser_can_reject_invalid_chars
-    de = DecryptParser.new('sample.txt')
-    assert_equal 'abcde', de.validate_text
+    text = "nazi stuff woooooooo ...end.."
+    de = DecryptParser.new('../examples/sample.txt')
+    assert_equal text, de.normalize_text
   end
 
 end

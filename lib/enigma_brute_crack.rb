@@ -6,12 +6,12 @@ require'pry'
 class Brutecrack
 
   attr_reader   :text
-  attr_accessor :key_attempt, :decrypted_text, :decrypt
+  attr_accessor :key_attempt, :decrypt
 
-  def initialize(filename, offset)
+  def initialize(filename, offset=nil)
     @text            = File.read(filename)
     @key_attempt     = '00001'
-    @offset          = offset
+    @offset          = offset || Offset.new.date
   end
 
   def normalize_text
