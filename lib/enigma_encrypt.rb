@@ -1,106 +1,94 @@
 require_relative 'enigma_key'
 require_relative 'enigma_offsets'
+require 'pry'
 
 
 class Encrypt
 
-  attr_reader :charmap, :rot1, :rot2
-  attr_accessor :rot_count
+  attr_reader :charmap, :key, :offset
+  attr_accessor :rotate_count, :encrypted_chars
 
   def initialize(key, offset)
-    @rot1      = Key.new(key)
-    @rot2      = Offset.new(offset)
-    @charmap   = [*("a".."z"), *("0".."9"), " ", ".", "," ]
-    @rot_count = 0
+    @key             = Key.new(key)
+    @offset          = Offset.new(offset)
+    @charmap         = [*("a".."z"), *("0".."9"), " ", ".", "," ]
+    @rotate_count    = 0
+    @encrypted_chars = []
   end
 
   def rotate_a(char)
     position = @charmap.find_index(char)
-    rotate   = position + @rot1.a + @rot2.a
-    char     = @charmap[rotate % 39]
+    rotate   = position + @key.a + @offset.a
+    char     = @charmap[rotate % @charmap.length]
   end
 
   def rotate_b(char)
     position = @charmap.find_index(char)
-    rotate   = position + @rot1.b + @rot2.b
-    char     = @charmap[rotate % 39]
+    rotate   = position + @key.b + @offset.b
+    char     = @charmap[rotate % @charmap.length]
   end
 
   def rotate_c(char)
     position = @charmap.find_index(char)
-    rotate   = position + @rot1.c + @rot2.c
-    char     = @charmap[rotate % 39]
+    rotate   = position + @key.c + @offset.c
+    char     = @charmap[rotate % @charmap.length]
   end
 
   def rotate_d(char)
     position = @charmap.find_index(char)
-    rotate   = position + @rot1.d + @rot2.d
-    char     = @charmap[rotate % 39]
+    rotate   = position + @key.d + @offset.d
+    char     = @charmap[rotate % @charmap.length]
   end
 
   def rotate_counter
-    case @rot_count
-      when 0
-        @rot_count += 1
-      when 1
-        @rot_count += 1
-      when 2
-        @rot_count += 1
-      when 3
-        @rot_count  = 0
+    if @rotate_count != 3
+      @rotate_count +=1
+    else
+      @rotate_count = 0
     end
+  end
+
+  def translate(text)
+    text.chars do |char|
+      @encrypted_chars << rotate_a(char) if @rotate_count == 0
+      @encrypted_chars << rotate_b(char) if @rotate_count == 1
+      @encrypted_chars << rotate_c(char) if @rotate_count == 2
+      @encrypted_chars << rotate_d(char) if @rotate_count == 3
+      rotate_counter
+    end
+    @encrypted_chars.join
   end
 
 end
 
 class EncryptParser
 
-  attr_reader :lines, :offset
-  attr_accessor :new_lines, :rot_count, :key
+  attr_reader :text, :offset, :key, :encrypt
 
-  def initialize(file, first=nil, second=nil)
-    @key    = first
-    @offset = second
-    @key   ||= Keygen.new.randkey
-    @offset||= Offset.new.date
-    file    = file
-    handle  = File.open(file)
-    @lines  = handle.readlines(file).join.strip
+  def initialize(filename, key=nil, offset=nil)
+    @key     = key || Keygen.new.randkey
+    @offset  = offset || Offset.new.date
+    @text    = File.read(filename)
+    @encrypt = Encrypt.new(@key, @offset)
   end
 
-  def validate_text
-    en = Encrypt.new(nil,nil)
-    @lines = @lines.split("")
-    @lines = @lines.reject do |char|
-      en.charmap.include?(char) == false
+  def normalize_text
+    @text = @text.chars.select do |char|
+      @encrypt.charmap.include?(char)
     end
-    @lines = @lines.join.strip
+    @text = @text.join
   end
 
-  def translate
-    @new_lines = []
-    encrypt = Encrypt.new(@key, @offset)
-    @lines.chars do |char|
-      @new_lines << encrypt.rotate_a(char) if encrypt.rot_count == 0
-      @new_lines << encrypt.rotate_b(char) if encrypt.rot_count == 1
-      @new_lines << encrypt.rotate_c(char) if encrypt.rot_count == 2
-      @new_lines << encrypt.rotate_d(char) if encrypt.rot_count == 3
-      encrypt.rotate_counter
-    end
-  end
-
-  def writer
-    output = File.open("Encrypted.txt", "w")
-    output.write(@new_lines.join)
-    output.close
+  def filewrite
+    File.write('../examples/Encrypted.txt', @encrypt.encrypted_chars.join)
   end
 
 end
 
-if __FILE__ ==$0
+if __FILE__ == $0
   ep = EncryptParser.new(ARGV[0], ARGV[1], ARGV[2])
-  ep.validate_text
-  ep.translate
-  ep.writer
+  ep.normalize_text
+  ep.encrypt.translate(ep.text)
+  ep.filewrite
   puts "Created an Encrypted.txt file with Key: #{ep.key} and Offset: #{ep.offset}"
 end

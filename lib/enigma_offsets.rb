@@ -2,12 +2,8 @@ class Offset
 
   attr_reader :date, :num
 
-  def initialize(date = CurrentDate.new)
-    if date.is_a?(CurrentDate)
-      @date = date.data
-    else
-      @date = date
-    end
+  def initialize(date = CurrentDate.new.data)
+    @date = date
     @num = @date.to_i ** 2
     @num = @num.to_s.reverse[0..3].reverse
   end

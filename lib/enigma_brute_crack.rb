@@ -5,44 +5,56 @@ require'pry'
 
 class Brutecrack
 
-  attr_reader   :lines
-  attr_accessor :key_s, :new_lines, :key
+  attr_reader   :text
+  attr_accessor :key_attempt, :decrypted_text, :decrypt
 
-  def initialize(file, offset)
-    handle     = File.open(file)
-    @lines     = handle.readlines(file).join.strip
-    @key_s     = '00001'
-    @offset    = offset
-    @new_lines = []
+  def initialize(filename, offset)
+    @text            = File.read(filename)
+    @key_attempt     = '00001'
+    @offset          = offset
   end
 
-  def key_iterator
-    until @new_lines[-7..-1] == [".",".","e","n","d",".","."]
-      @new_lines = []
-      decrypt = Decrypt.new(@key_s, @offset)
-      @lines.chars.map do |char|
-        @new_lines << decrypt.rotate_a(char) if decrypt.rot_count == 0
-        @new_lines << decrypt.rotate_b(char) if decrypt.rot_count == 1
-        @new_lines << decrypt.rotate_c(char) if decrypt.rot_count == 2
-        @new_lines << decrypt.rotate_d(char) if decrypt.rot_count == 3
-        decrypt.rotate_counter
-      end
-      @key_s = @key_s.succ
+  def normalize_text
+    @decrypt = Decrypt.new(nil,nil)
+    @text = @text.chars.select do |char|
+      @decrypt.charmap.include?(char)
     end
-    @key_s = (@key_s.to_i - 1).to_s.rjust(5, "0")
+    @text = @text.join
   end
 
-  def writer
-    output = File.open("Cracked.txt", "w")
-    output.write(@new_lines.join)
-    output.close
+  def end_statement
+    ['.','.','e','n','d','.','.']
+  end
+
+  def last_seven_chars
+    @decrypt.decrypted_chars[-7..-1]
+  end
+
+  def printed_key_attempt
+    (@key_attempt.to_i - 1).to_s.rjust(5, "0")
+  end
+
+  def key_attempt_iterator
+    until last_seven_chars == end_statement
+      @decrypt = Decrypt.new(@key_attempt, @offset)
+      @decrypt.decrypted_chars = []
+      text = @text.dup
+      @decrypt.translate(text)
+      @key_attempt = @key_attempt.succ
+    end
+    @key_attempt = printed_key_attempt
+  end
+
+  def filewrite
+    File.write('../examples/Cracked.txt', @decrypt.decrypted_chars.join)
   end
 
 end
 
 if __FILE__ == $0
    brute = Brutecrack.new(ARGV[0], ARGV[1])
-   brute.key_iterator
-   brute.writer
-   puts "Created a Cracked.txt file with a key of: #{brute.key_s}."
+   brute.normalize_text
+   brute.key_attempt_iterator
+   brute.filewrite
+   puts "Created a Cracked.txt file with a key of: #{brute.key_attempt}."
 end

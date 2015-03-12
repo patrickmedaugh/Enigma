@@ -2,31 +2,27 @@ class Key
 
   attr_accessor :keynum
 
-  def initialize(key = Keygen.new)
-    if key.is_a?(Keygen)
-      @keynum = key.randkey
-    else
-      @keynum = key.to_s
-    end
+  def initialize(key = Keygen.new.randkey)
+    @keynum = key.to_s
   end
 
   def a
-    key_array = @keynum.to_s.split("")
+    key_array = @keynum.chars
     (key_array[0].to_i * 10) + (key_array[1].to_i)
   end
 
   def b
-    key_array = @keynum.to_s.split("")
+    key_array = @keynum.chars
     (key_array[1].to_i * 10) + (key_array[2].to_i)
   end
 
   def c
-    key_array = @keynum.to_s.split("")
+    key_array = @keynum.chars
     (key_array[2].to_i * 10) + (key_array[3].to_i)
   end
 
   def d
-    key_array = @keynum.to_s.split("")
+    key_array = @keynum.chars
     (key_array[3].to_i * 10) + (key_array[4].to_i)
   end
 

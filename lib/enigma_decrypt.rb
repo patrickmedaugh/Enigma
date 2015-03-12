@@ -1,115 +1,96 @@
 require_relative 'enigma_key'
 require_relative 'enigma_offsets'
-require_relative 'enigma_encrypt'
-
+require 'pry'
 
 class Decrypt
 
-  attr_reader :charmap, :rot1, :rot2, :rot_count
+  attr_reader :charmap, :offset
+  attr_accessor :rotate_count, :decrypted_chars, :key
 
   def initialize(key, offset)
-    @rot1      = Key.new(key)
-    @rot2      = Offset.new(offset)
-    @charmap   = [*("a".."z"), *("0".."9"), " ", ".", "," ]
-    @rot_count = 0
+    @key             = Key.new(key)
+    @offset          = Offset.new(offset)
+    @charmap         = [*("a".."z"), *("0".."9"), " ", ".", "," ]
+    @rotate_count    = 0
+    @decrypted_chars = []
   end
 
   def rotate_a(char)
     position = @charmap.find_index(char)
-    rotate   = position - (@rot1.a + @rot2.a)
-    if rotate < 0
-      rotate = rotate + 39
-    end
-    char = @charmap[rotate % 39]
+    rotate   = position - (@key.a + @offset.a)
+    rotate   = rotate + @charmap.length if rotate < 0
+    char     = @charmap[rotate]
   end
 
   def rotate_b(char)
     position = @charmap.find_index(char)
-    rotate   = position - (@rot1.b + @rot2.b)
-    if rotate < 0
-      rotate = rotate + 39
-    end
-    char = @charmap[rotate % 39]
+    rotate   = position - (@key.b + @offset.b)
+    rotate   = rotate + @charmap.length if rotate < 0
+    char     = @charmap[rotate]
   end
 
   def rotate_c(char)
     position = @charmap.find_index(char)
-    rotate   = position - (@rot1.c + @rot2.c)
-    if rotate < 0
-      rotate = rotate + 39
-    end
-    char = @charmap[rotate % 39]
+    rotate   = position - (@key.c + @offset.c)
+    rotate   = rotate + @charmap.length if rotate < 0
+    char     = @charmap[rotate]
   end
 
   def rotate_d(char)
     position = @charmap.find_index(char)
-    rotate   = position - (@rot1.d + @rot2.d)
-    if rotate < 0
-      rotate = rotate + 39
-    end
-    char = @charmap[rotate % 39]
+    rotate   = position - (@key.d + @offset.d)
+    rotate   = rotate + @charmap.length if rotate < 0
+    char     = @charmap[rotate]
   end
 
   def rotate_counter
-    case @rot_count
-      when 0
-        @rot_count += 1
-      when 1
-        @rot_count += 1
-      when 2
-        @rot_count += 1
-      when 3
-        @rot_count  = 0
-      end
+    if @rotate_count != 3
+      @rotate_count +=1
+    else
+      @rotate_count = 0
+    end
   end
 
+  def translate(text)
+    text.chars do |char|
+      @decrypted_chars << rotate_a(char) if @rotate_count == 0
+      @decrypted_chars << rotate_b(char) if @rotate_count == 1
+      @decrypted_chars << rotate_c(char) if @rotate_count == 2
+      @decrypted_chars << rotate_d(char) if @rotate_count == 3
+      rotate_counter
+    end
+    @decrypted_chars.join
+  end
 end
 
 class DecryptParser
 
-  attr_reader :lines, :offs
-  attr_accessor :new_lines, :rot_count, :key, :offset
+  attr_reader :text, :offset, :key, :decrypt
 
-  def initialize(file, first=nil, second=nil)
-    @key    = first
-    @offset = second
-    handle  = File.open(file)
-    @lines  = handle.readlines(file).join.strip
+  def initialize(filename, key=nil, offset=nil)
+    @key     = key || Keygen.new.randkey
+    @offset  = offset || Offset.new.date
+    @text    = File.read(filename)
+    @decrypt = Decrypt.new(@key, @offset)
   end
 
-  def validate_text
-    de     = Decrypt.new(nil,nil)
-    @lines = @lines.split("")
-    @lines = @lines.reject do |char|
-      de.charmap.include?(char) == false
+  def normalize_text
+    @text = @text.chars.select do |char|
+      @decrypt.charmap.include?(char)
     end
-    @lines = @lines.join
+    @text = @text.join
   end
 
-  def translate
-    @new_lines = []
-    decrypt = Decrypt.new(@key, @offset)
-    @lines.chars do |char|
-      @new_lines << decrypt.rotate_a(char) if decrypt.rot_count == 0
-      @new_lines << decrypt.rotate_b(char) if decrypt.rot_count == 1
-      @new_lines << decrypt.rotate_c(char) if decrypt.rot_count == 2
-      @new_lines << decrypt.rotate_d(char) if decrypt.rot_count == 3
-      decrypt.rotate_counter
-    end
-  end
-
-  def writer
-    output = File.open("Decrypted.txt", "w")
-    output.write(@new_lines.join)
-    output.close
+  def filewrite
+    File.write('../examples/Decrypted.txt', @decrypt.decrypted_chars.join)
   end
 
 end
 
 if __FILE__ == $0
   dp = DecryptParser.new(ARGV[0], ARGV[1], ARGV[2])
-  dp.validate_text
-  dp.translate
-  dp.writer
+  dp.normalize_text
+  dp.decrypt.translate(dp.text)
+  dp.filewrite
   puts "Created a Decrypted.txt file with Key: #{dp.key} and Offset: #{dp.offset}"
 end
