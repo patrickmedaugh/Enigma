@@ -63,13 +63,14 @@ end
 
 class EncryptParser
 
-  attr_reader :text, :offset, :key, :encrypt
+  attr_reader :text, :offset, :key, :encrypt, :file_to_write
 
-  def initialize(filename, key=nil, offset=nil)
-    @key     = key || Keygen.new.randkey
-    @offset  = offset || Offset.new.date
-    @text    = File.read(filename)
-    @encrypt = Encrypt.new(@key, @offset)
+  def initialize(filename, file_to_write, key=nil, offset=nil)
+    @key           = key || Keygen.new.randkey
+    @offset        = offset || Offset.new.date
+    @text          = File.read(filename)
+    @encrypt       = Encrypt.new(@key, @offset)
+    @file_to_write = file_to_write
   end
 
   def normalize_text
@@ -80,15 +81,15 @@ class EncryptParser
   end
 
   def filewrite
-    File.write('../examples/Encrypted.txt', @encrypt.encrypted_chars.join)
+    File.write("../examples/#{@file_to_write}", @encrypt.encrypted_chars.join)
   end
 
 end
 
 if __FILE__ == $0
-  ep = EncryptParser.new(ARGV[0], ARGV[1], ARGV[2])
+  ep = EncryptParser.new(ARGV[0], ARGV[1], ARGV[2], ARGV[3])
   ep.normalize_text
   ep.encrypt.translate(ep.text)
   ep.filewrite
-  puts "Created an Encrypted.txt file with Key: #{ep.key} and Offset: #{ep.offset}"
+  puts "Created an #{@file_to_write} file with Key: #{ep.key} and Offset: #{ep.offset}"
 end

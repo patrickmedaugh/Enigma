@@ -8,10 +8,11 @@ class Brutecrack
   attr_reader   :text
   attr_accessor :key_attempt, :decrypt
 
-  def initialize(filename, offset=nil)
+  def initialize(filename, file_to_write, offset=nil)
     @text            = File.read(filename)
     @key_attempt     = '00001'
     @offset          = offset || Offset.new.date
+    @file_to_write   = file_to_write
   end
 
   def normalize_text
@@ -46,15 +47,15 @@ class Brutecrack
   end
 
   def filewrite
-    File.write('../examples/Cracked.txt', @decrypt.decrypted_chars.join)
+    File.write("../examples/#{@file_to_write}", @decrypt.decrypted_chars.join)
   end
 
 end
 
 if __FILE__ == $0
-   brute = Brutecrack.new(ARGV[0], ARGV[1])
+   brute = Brutecrack.new(ARGV[0], ARGV[1], ARGV[2])
    brute.normalize_text
    brute.key_attempt_iterator
    brute.filewrite
-   puts "Created a Cracked.txt file with a key of: #{brute.key_attempt}."
+   puts "Created a #{@file_to_write} file with a key of: #{brute.key_attempt}."
 end

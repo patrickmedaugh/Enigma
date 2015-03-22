@@ -65,13 +65,14 @@ end
 
 class DecryptParser
 
-  attr_reader :text, :offset, :key, :decrypt
+  attr_reader :text, :offset, :key, :decrypt, :file_to_write
 
-  def initialize(filename, key=nil, offset=nil)
-    @key     = key || Keygen.new.randkey
-    @offset  = offset || Offset.new.date
-    @text    = File.read(filename)
-    @decrypt = Decrypt.new(@key, @offset)
+  def initialize(filename, file_to_write, key=nil, offset=nil)
+    @key           = key || Keygen.new.randkey
+    @offset        = offset || Offset.new.date
+    @text          = File.read(filename)
+    @decrypt       = Decrypt.new(@key, @offset)
+    @file_to_write = file_to_write
   end
 
   def normalize_text
@@ -82,15 +83,15 @@ class DecryptParser
   end
 
   def filewrite
-    File.write('../examples/Decrypted.txt', @decrypt.decrypted_chars.join)
+    File.write("../examples/#{@file_to_write}", @decrypt.decrypted_chars.join)
   end
 
 end
 
 if __FILE__ == $0
-  dp = DecryptParser.new(ARGV[0], ARGV[1], ARGV[2])
+  dp = DecryptParser.new(ARGV[0], ARGV[1], ARGV[2], ARGV[3])
   dp.normalize_text
   dp.decrypt.translate(dp.text)
   dp.filewrite
-  puts "Created a Decrypted.txt file with Key: #{dp.key} and Offset: #{dp.offset}"
+  puts "Created a #{@file_to_write} file with Key: #{dp.key} and Offset: #{dp.offset}"
 end
